@@ -1,13 +1,14 @@
 import React from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Button = ({ children, onClick, type = 'button', variant }) => {
+  const variantClass = variant === 'destructive' ? 'btn btn-danger' : 'btn btn-primary';
+
   return (
     <button
       type={type}
       onClick={onClick}
-      className={`px-4 py-2 rounded ${
-        variant === 'destructive' ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'
-      }`}
+      className={variantClass}
     >
       {children}
     </button>

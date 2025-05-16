@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import Card from '../components/ui/Card';
-import CardContent from '../components/ui/CardContent';
-import Button from '../components/ui/Button';
+import Input from '../components/ui/Input';
+import Label from '../components/ui/Label';
 
 const Cars = () => {
   const [cars, setCars] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     brand: '',
     model: '',
@@ -17,11 +17,14 @@ const Cars = () => {
   }, []);
 
   const fetchCars = async () => {
+    setLoading(true);
     try {
       const response = await axios.get('http://localhost:8080/cars/allCars');
       setCars(response.data);
     } catch (error) {
       console.error('Error fetching cars:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -37,6 +40,7 @@ const Cars = () => {
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this car?')) return;
     try {
       await axios.delete(`http://localhost:8080/cars/deleteCar/${id}`);
       fetchCars();
@@ -46,44 +50,79 @@ const Cars = () => {
   };
 
   return (
-    <div>
-      <Card className="mb-6">
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <input
-              className="w-full p-2 border rounded"
-              type="text"
-              name="brand"
-              placeholder="Car Brand"
-              value={formData.brand}
-              onChange={(e) => setFormData({...formData, brand: e.target.value})}
-            />
-            {/* Add other fields similarly */}
-            <Button type="submit">Add Car</Button>
-          </form>
-        </CardContent>
-      </Card>
-
-      <div className="space-y-4">
-        {cars.map(car => (
-          <Card key={car.id}>
-            <CardContent>
-              <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="font-bold">{car.brand} {car.model}</h3>
-                  <p>Year: {car.year}</p>
-                </div>
-                <Button 
-                  variant="destructive" 
-                  onClick={() => handleDelete(car.id)}
-                >
-                  Delete
-                </Button>
+    <div className="container mt-4">
+      <div className="card mb-4">
+        <div className="card-body">
+          <h2 className="card-title mb-4">Add New Car</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="row g-3">
+              <div className="col-md-4">
+                <Label htmlFor="brand">Brand</Label>
+                <Input
+                  id="brand"
+                  value={formData.brand}
+                  onChange={(e) => setFormData({...formData, brand: e.target.value})}
+                  required
+                />
               </div>
-            </CardContent>
-          </Card>
-        ))}
+              <div className="col-md-4">
+                <Label htmlFor="model">Model</Label>
+                <Input
+                  id="model"
+                  value={formData.model}
+                  onChange={(e) => setFormData({...formData, model: e.target.value})}
+                  required
+                />
+              </div>
+              <div className="col-md-4">
+                <Label htmlFor="year">Year</Label>
+                <Input
+                  id="year"
+                  type="number"
+                  value={formData.year}
+                  onChange={(e) => setFormData({...formData, year: e.target.value})}
+                  required
+                />
+              </div>
+            </div>
+            <button type="submit" className="btn btn-primary mt-3">
+              Add Car
+            </button>
+          </form>
+        </div>
       </div>
+
+      <h2 className="mb-3">Car Inventory</h2>
+      {loading ? (
+        <div className="text-center my-4">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      ) : cars.length === 0 ? (
+        <div className="alert alert-info">No cars found. Add your first car!</div>
+      ) : (
+        <div className="row row-cols-1 row-cols-md-3 g-4">
+          {cars.map(car => (
+            <div key={car.id} className="col">
+              <div className="card h-100">
+                <div className="card-body">
+                  <h5 className="card-title">{car.brand} {car.model}</h5>
+                  <p className="card-text">Year: {car.year}</p>
+                </div>
+                <div className="card-footer">
+                  <button 
+                    className="btn btn-danger btn-sm"
+                    onClick={() => handleDelete(car.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

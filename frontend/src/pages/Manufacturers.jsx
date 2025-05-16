@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import Card from '../components/ui/Card';
-import CardContent from '../components/ui/CardContent';
-import Button from '../components/ui/Button';
 
 const Manufacturers = () => {
   const [manufacturers, setManufacturers] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     country: '',
@@ -18,11 +16,14 @@ const Manufacturers = () => {
   }, []);
 
   const fetchManufacturers = async () => {
+    setLoading(true);
     try {
       const response = await axios.get('http://localhost:8080/manufacturers/allManufacturers');
       setManufacturers(response.data);
     } catch (error) {
       console.error('Error fetching manufacturers:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -38,6 +39,7 @@ const Manufacturers = () => {
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this manufacturer?')) return;
     try {
       await axios.delete(`http://localhost:8080/manufacturers/deleteManufacturer/${id}`);
       fetchManufacturers();
@@ -47,70 +49,111 @@ const Manufacturers = () => {
   };
 
   return (
-    <div>
-      <Card className="mb-6">
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <input
-              className="w-full p-2 border rounded"
-              type="text"
-              name="name"
-              placeholder="Manufacturer Name"
-              value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
-              required
-            />
-            <input
-              className="w-full p-2 border rounded"
-              type="text"
-              name="country"
-              placeholder="Country"
-              value={formData.country}
-              onChange={(e) => setFormData({...formData, country: e.target.value})}
-            />
-            <input
-              className="w-full p-2 border rounded"
-              type="text"
-              name="address"
-              placeholder="Address"
-              value={formData.address}
-              onChange={(e) => setFormData({...formData, address: e.target.value})}
-            />
-            <input
-              className="w-full p-2 border rounded"
-              type="text"
-              name="phone"
-              placeholder="Phone"
-              value={formData.phone}
-              onChange={(e) => setFormData({...formData, phone: e.target.value})}
-            />
-            <Button type="submit">Add Manufacturer</Button>
-          </form>
-        </CardContent>
-      </Card>
-
-      <div className="space-y-4">
-        {manufacturers.map(manufacturer => (
-          <Card key={manufacturer.id}>
-            <CardContent>
-              <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="font-bold">{manufacturer.name}</h3>
-                  <p>Country: {manufacturer.country}</p>
-                  <p>Address: {manufacturer.address}</p>
-                  <p>Phone: {manufacturer.phone}</p>
-                </div>
-                <Button 
-                  variant="destructive" 
-                  onClick={() => handleDelete(manufacturer.id)}
-                >
-                  Delete
-                </Button>
+    <div className="container mt-4">
+      <div className="card mb-4">
+        <div className="card-body">
+          <h2 className="card-title mb-4">Add New Manufacturer</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="row g-3">
+              <div className="col-md-6">
+                <label htmlFor="name" className="form-label">Name</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  required
+                />
               </div>
-            </CardContent>
-          </Card>
-        ))}
+              <div className="col-md-6">
+                <label htmlFor="country" className="form-label">Country</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="country"
+                  value={formData.country}
+                  onChange={(e) => setFormData({...formData, country: e.target.value})}
+                />
+              </div>
+              <div className="col-12">
+                <label htmlFor="address" className="form-label">Address</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="address"
+                  value={formData.address}
+                  onChange={(e) => setFormData({...formData, address: e.target.value})}
+                />
+              </div>
+              <div className="col-md-6">
+                <label htmlFor="phone" className="form-label">Phone</label>
+                <input
+                  type="tel"
+                  className="form-control"
+                  id="phone"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                />
+              </div>
+            </div>
+            <button type="submit" className="btn btn-primary mt-3">
+              Add Manufacturer
+            </button>
+          </form>
+        </div>
       </div>
+
+      <h2 className="mb-3">Manufacturers</h2>
+      {loading ? (
+        <div className="text-center my-4">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      ) : manufacturers.length === 0 ? (
+        <div className="alert alert-info">No manufacturers found. Add your first manufacturer!</div>
+      ) : (
+        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+          {manufacturers.map(manufacturer => (
+            <div key={manufacturer.id} className="col">
+              <div className="card h-100">
+                <div className="card-body">
+                  <h5 className="card-title">{manufacturer.name}</h5>
+                  <div className="card-text">
+                    {manufacturer.country && (
+                      <p className="mb-1">
+                        <i className="bi bi-globe me-2"></i>
+                        {manufacturer.country}
+                      </p>
+                    )}
+                    {manufacturer.address && (
+                      <p className="mb-1">
+                        <i className="bi bi-geo-alt me-2"></i>
+                        {manufacturer.address}
+                      </p>
+                    )}
+                    {manufacturer.phone && (
+                      <p className="mb-0">
+                        <i className="bi bi-telephone me-2"></i>
+                        {manufacturer.phone}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="card-footer bg-transparent">
+                  <button 
+                    className="btn btn-danger btn-sm"
+                    onClick={() => handleDelete(manufacturer.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
