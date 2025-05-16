@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import SearchBar from '../components/ui/SearchBar';
 
 const Parts = () => {
   const [parts, setParts] = useState([]);
@@ -10,6 +11,7 @@ const Parts = () => {
     purchasePrice: '',
     sellingPrice: ''
   });
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchParts();
@@ -52,9 +54,16 @@ const Parts = () => {
     }
   };
 
+  const filteredParts = parts.filter(part => 
+    part.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    part.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    part.purchasePrice.toString().includes(searchTerm) ||
+    part.sellingPrice.toString().includes(searchTerm)
+  );
+
   return (
     <div className="container mt-4">
-      <div className="card mb-4">
+      <div className="card mb-4 shadow-sm">
         <div className="card-body">
           <h2 className="card-title mb-4">Add New Part</h2>
           <form onSubmit={handleSubmit}>
@@ -83,29 +92,35 @@ const Parts = () => {
               </div>
               <div className="col-md-6">
                 <label htmlFor="purchasePrice" className="form-label">Purchase Price ($)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  className="form-control"
-                  id="purchasePrice"
-                  value={formData.purchasePrice}
-                  onChange={(e) => setFormData({...formData, purchasePrice: e.target.value})}
-                  required
-                />
+                <div className="input-group">
+                  <span className="input-group-text">$</span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    className="form-control"
+                    id="purchasePrice"
+                    value={formData.purchasePrice}
+                    onChange={(e) => setFormData({...formData, purchasePrice: e.target.value})}
+                    required
+                  />
+                </div>
               </div>
               <div className="col-md-6">
                 <label htmlFor="sellingPrice" className="form-label">Selling Price ($)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  className="form-control"
-                  id="sellingPrice"
-                  value={formData.sellingPrice}
-                  onChange={(e) => setFormData({...formData, sellingPrice: e.target.value})}
-                  required
-                />
+                <div className="input-group">
+                  <span className="input-group-text">$</span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    className="form-control"
+                    id="sellingPrice"
+                    value={formData.sellingPrice}
+                    onChange={(e) => setFormData({...formData, sellingPrice: e.target.value})}
+                    required
+                  />
+                </div>
               </div>
             </div>
             <button type="submit" className="btn btn-primary mt-3">
@@ -115,15 +130,30 @@ const Parts = () => {
         </div>
       </div>
 
-      <h2 className="mb-3">Parts Inventory</h2>
+      <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+        <h2 className="mb-3 mb-md-0">Parts Inventory</h2>
+        <div className="col-md-4">
+          <SearchBar
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onClear={() => setSearchTerm('')}
+            placeholder="Search parts..."
+          />
+        </div>
+      </div>
+
       {loading ? (
-        <div className="text-center my-4">
-          <div className="spinner-border" role="status">
+        <div className="text-center my-5">
+          <div className="spinner-border" style={{width: '3rem', height: '3rem'}} role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
         </div>
-      ) : parts.length === 0 ? (
-        <div className="alert alert-info">No parts found. Add your first part!</div>
+      ) : filteredParts.length === 0 ? (
+        <div className="alert alert-info">
+          {parts.length === 0 
+            ? "No parts found. Add your first part!" 
+            : "No parts match your search."}
+        </div>
       ) : (
         <div className="table-responsive">
           <table className="table table-striped table-hover">
@@ -133,26 +163,35 @@ const Parts = () => {
                 <th>Name</th>
                 <th className="text-end">Purchase</th>
                 <th className="text-end">Selling</th>
+                <th className="text-end">Profit</th>
                 <th className="text-end">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {parts.map(part => (
-                <tr key={part.id}>
-                  <td>{part.code}</td>
-                  <td>{part.name}</td>
-                  <td className="text-end">${part.purchasePrice.toFixed(2)}</td>
-                  <td className="text-end">${part.sellingPrice.toFixed(2)}</td>
-                  <td className="text-end">
-                    <button 
-                      className="btn btn-danger btn-sm"
-                      onClick={() => handleDelete(part.id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {filteredParts.map(part => {
+                const profit = part.sellingPrice - part.purchasePrice;
+                const profitClass = profit >= 0 ? 'text-success' : 'text-danger';
+                
+                return (
+                  <tr key={part.id}>
+                    <td>{part.code}</td>
+                    <td>{part.name}</td>
+                    <td className="text-end">${part.purchasePrice.toFixed(2)}</td>
+                    <td className="text-end">${part.sellingPrice.toFixed(2)}</td>
+                    <td className={`text-end ${profitClass}`}>
+                      ${Math.abs(profit).toFixed(2)} {profit >= 0 ? '↑' : '↓'}
+                    </td>
+                    <td className="text-end">
+                      <button 
+                        className="btn btn-outline-danger btn-sm"
+                        onClick={() => handleDelete(part.id)}
+                      >
+                        <i className="bi bi-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

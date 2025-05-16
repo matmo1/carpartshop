@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import Input from '../components/ui/Input';
-import Label from '../components/ui/Label';
+import SearchBar from '../components/ui/SearchBar';
 
 const Cars = () => {
   const [cars, setCars] = useState([]);
@@ -11,6 +10,7 @@ const Cars = () => {
     model: '',
     year: ''
   });
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchCars();
@@ -49,16 +49,24 @@ const Cars = () => {
     }
   };
 
+  const filteredCars = cars.filter(car => 
+    car.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    car.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    car.year.toString().includes(searchTerm)
+  );
+
   return (
     <div className="container mt-4">
-      <div className="card mb-4">
+      <div className="card mb-4 shadow-sm">
         <div className="card-body">
           <h2 className="card-title mb-4">Add New Car</h2>
           <form onSubmit={handleSubmit}>
             <div className="row g-3">
               <div className="col-md-4">
-                <Label htmlFor="brand">Brand</Label>
-                <Input
+                <label htmlFor="brand" className="form-label">Brand</label>
+                <input
+                  type="text"
+                  className="form-control"
                   id="brand"
                   value={formData.brand}
                   onChange={(e) => setFormData({...formData, brand: e.target.value})}
@@ -66,8 +74,10 @@ const Cars = () => {
                 />
               </div>
               <div className="col-md-4">
-                <Label htmlFor="model">Model</Label>
-                <Input
+                <label htmlFor="model" className="form-label">Model</label>
+                <input
+                  type="text"
+                  className="form-control"
                   id="model"
                   value={formData.model}
                   onChange={(e) => setFormData({...formData, model: e.target.value})}
@@ -75,10 +85,13 @@ const Cars = () => {
                 />
               </div>
               <div className="col-md-4">
-                <Label htmlFor="year">Year</Label>
-                <Input
-                  id="year"
+                <label htmlFor="year" className="form-label">Year</label>
+                <input
                   type="number"
+                  className="form-control"
+                  id="year"
+                  min="1900"
+                  max={new Date().getFullYear() + 1}
                   value={formData.year}
                   onChange={(e) => setFormData({...formData, year: e.target.value})}
                   required
@@ -92,30 +105,49 @@ const Cars = () => {
         </div>
       </div>
 
-      <h2 className="mb-3">Car Inventory</h2>
+      <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+        <h2 className="mb-3 mb-md-0">Car Inventory</h2>
+        <div className="col-md-4">
+          <SearchBar
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onClear={() => setSearchTerm('')}
+            placeholder="Search cars..."
+          />
+        </div>
+      </div>
+
       {loading ? (
-        <div className="text-center my-4">
-          <div className="spinner-border text-primary" role="status">
+        <div className="text-center my-5">
+          <div className="spinner-border text-primary" style={{width: '3rem', height: '3rem'}} role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
         </div>
-      ) : cars.length === 0 ? (
-        <div className="alert alert-info">No cars found. Add your first car!</div>
+      ) : filteredCars.length === 0 ? (
+        <div className="alert alert-info">
+          {cars.length === 0 
+            ? "No cars found. Add your first car!" 
+            : "No cars match your search."}
+        </div>
       ) : (
-        <div className="row row-cols-1 row-cols-md-3 g-4">
-          {cars.map(car => (
+        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+          {filteredCars.map(car => (
             <div key={car.id} className="col">
-              <div className="card h-100">
+              <div className="card h-100 shadow-sm">
                 <div className="card-body">
-                  <h5 className="card-title">{car.brand} {car.model}</h5>
-                  <p className="card-text">Year: {car.year}</p>
+                  <h5 className="card-title">
+                    {car.brand} {car.model}
+                  </h5>
+                  <div className="card-text">
+                    <p className="mb-1"><strong>Year:</strong> {car.year}</p>
+                  </div>
                 </div>
-                <div className="card-footer">
+                <div className="card-footer bg-transparent d-flex justify-content-end">
                   <button 
-                    className="btn btn-danger btn-sm"
+                    className="btn btn-outline-danger btn-sm"
                     onClick={() => handleDelete(car.id)}
                   >
-                    Delete
+                    <i className="bi bi-trash"></i> Delete
                   </button>
                 </div>
               </div>
