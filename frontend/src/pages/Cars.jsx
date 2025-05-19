@@ -57,16 +57,16 @@ const Cars = () => {
 
   return (
     <div className="container mt-4">
-      <div className="card mb-4 shadow-sm">
+      <div className="card mb-4 shadow-sm border-primary">
         <div className="card-body">
-          <h2 className="card-title mb-4">Add New Car</h2>
+          <h2 className="card-title mb-4 text-primary">Add New Car</h2>
           <form onSubmit={handleSubmit}>
             <div className="row g-3">
               <div className="col-md-4">
-                <label htmlFor="brand" className="form-label">Brand</label>
+                <label htmlFor="brand" className="form-label text-primary">Brand</label>
                 <input
                   type="text"
-                  className="form-control"
+                  className="form-control border-primary"
                   id="brand"
                   value={formData.brand}
                   onChange={(e) => setFormData({...formData, brand: e.target.value})}
@@ -74,10 +74,10 @@ const Cars = () => {
                 />
               </div>
               <div className="col-md-4">
-                <label htmlFor="model" className="form-label">Model</label>
+                <label htmlFor="model" className="form-label text-primary">Model</label>
                 <input
                   type="text"
-                  className="form-control"
+                  className="form-control border-primary"
                   id="model"
                   value={formData.model}
                   onChange={(e) => setFormData({...formData, model: e.target.value})}
@@ -85,10 +85,10 @@ const Cars = () => {
                 />
               </div>
               <div className="col-md-4">
-                <label htmlFor="year" className="form-label">Year</label>
+                <label htmlFor="year" className="form-label text-primary">Year</label>
                 <input
                   type="number"
-                  className="form-control"
+                  className="form-control border-primary"
                   id="year"
                   min="1900"
                   max={new Date().getFullYear() + 1}
@@ -98,7 +98,7 @@ const Cars = () => {
                 />
               </div>
             </div>
-            <button type="submit" className="btn btn-primary mt-3">
+            <button type="submit" className="btn btn-primary mt-3 text-white">
               Add Car
             </button>
           </form>
@@ -106,7 +106,7 @@ const Cars = () => {
       </div>
 
       <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-        <h2 className="mb-3 mb-md-0">Car Inventory</h2>
+        <h2 className="mb-3 mb-md-0 text-primary">Car Inventory</h2>
         <div className="col-md-4">
           <SearchBar
             value={searchTerm}
@@ -124,7 +124,7 @@ const Cars = () => {
           </div>
         </div>
       ) : filteredCars.length === 0 ? (
-        <div className="alert alert-info">
+        <div className="alert alert-primary">
           {cars.length === 0 
             ? "No cars found. Add your first car!" 
             : "No cars match your search."}
@@ -133,18 +133,18 @@ const Cars = () => {
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
           {filteredCars.map(car => (
             <div key={car.id} className="col">
-              <div className="card h-100 shadow-sm">
+              <div className="card h-100 shadow-sm border-primary">
                 <div className="card-body">
-                  <h5 className="card-title">
+                  <h5 className="card-title text-primary">
                     {car.brand} {car.model}
                   </h5>
                   <div className="card-text">
-                    <p className="mb-1"><strong>Year:</strong> {car.year}</p>
+                    <p className="mb-1"><strong className="text-primary">Year:</strong> {car.year}</p>
                   </div>
                 </div>
                 <div className="card-footer bg-transparent d-flex justify-content-end">
                   <button 
-                    className="btn btn-outline-danger btn-sm"
+                    className="btn btn-outline-primary btn-sm"
                     onClick={() => handleDelete(car.id)}
                   >
                     <i className="bi bi-trash"></i> Delete

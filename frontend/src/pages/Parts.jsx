@@ -63,16 +63,16 @@ const Parts = () => {
 
   return (
     <div className="container mt-4">
-      <div className="card mb-4 shadow-sm">
+      <div className="card mb-4 shadow-sm border-primary">
         <div className="card-body">
-          <h2 className="card-title mb-4">Add New Part</h2>
+          <h2 className="card-title mb-4 text-primary">Add New Part</h2>
           <form onSubmit={handleSubmit}>
             <div className="row g-3">
               <div className="col-md-6">
-                <label htmlFor="code" className="form-label">Part Code</label>
+                <label htmlFor="code" className="form-label text-primary">Part Code</label>
                 <input
                   type="text"
-                  className="form-control"
+                  className="form-control border-primary"
                   id="code"
                   value={formData.code}
                   onChange={(e) => setFormData({...formData, code: e.target.value})}
@@ -80,10 +80,10 @@ const Parts = () => {
                 />
               </div>
               <div className="col-md-6">
-                <label htmlFor="name" className="form-label">Part Name</label>
+                <label htmlFor="name" className="form-label text-primary">Part Name</label>
                 <input
                   type="text"
-                  className="form-control"
+                  className="form-control border-primary"
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
@@ -91,14 +91,14 @@ const Parts = () => {
                 />
               </div>
               <div className="col-md-6">
-                <label htmlFor="purchasePrice" className="form-label">Purchase Price ($)</label>
+                <label htmlFor="purchasePrice" className="form-label text-primary">Purchase Price ($)</label>
                 <div className="input-group">
                   <span className="input-group-text">$</span>
                   <input
                     type="number"
                     step="0.01"
                     min="0"
-                    className="form-control"
+                    className="form-control border-primary"
                     id="purchasePrice"
                     value={formData.purchasePrice}
                     onChange={(e) => setFormData({...formData, purchasePrice: e.target.value})}
@@ -107,14 +107,14 @@ const Parts = () => {
                 </div>
               </div>
               <div className="col-md-6">
-                <label htmlFor="sellingPrice" className="form-label">Selling Price ($)</label>
+                <label htmlFor="sellingPrice" className="form-label text-primary">Selling Price ($)</label>
                 <div className="input-group">
                   <span className="input-group-text">$</span>
                   <input
                     type="number"
                     step="0.01"
                     min="0"
-                    className="form-control"
+                    className="form-control border-primary"
                     id="sellingPrice"
                     value={formData.sellingPrice}
                     onChange={(e) => setFormData({...formData, sellingPrice: e.target.value})}
@@ -123,7 +123,7 @@ const Parts = () => {
                 </div>
               </div>
             </div>
-            <button type="submit" className="btn btn-primary mt-3">
+            <button type="submit" className="btn btn-primary mt-3 text-white">
               Add Part
             </button>
           </form>
@@ -131,7 +131,7 @@ const Parts = () => {
       </div>
 
       <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-        <h2 className="mb-3 mb-md-0">Parts Inventory</h2>
+        <h2 className="mb-3 mb-md-0 text-primary">Parts Inventory</h2>
         <div className="col-md-4">
           <SearchBar
             value={searchTerm}
@@ -144,12 +144,12 @@ const Parts = () => {
 
       {loading ? (
         <div className="text-center my-5">
-          <div className="spinner-border" style={{width: '3rem', height: '3rem'}} role="status">
+          <div className="spinner-border text-primary" style={{width: '3rem', height: '3rem'}} role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
         </div>
       ) : filteredParts.length === 0 ? (
-        <div className="alert alert-info">
+        <div className="alert alert-primary">
           {parts.length === 0 
             ? "No parts found. Add your first part!" 
             : "No parts match your search."}
@@ -157,7 +157,7 @@ const Parts = () => {
       ) : (
         <div className="table-responsive">
           <table className="table table-striped table-hover">
-            <thead className="table-dark">
+            <thead className="bg-primary text-white">
               <tr>
                 <th>Code</th>
                 <th>Name</th>
@@ -174,16 +174,16 @@ const Parts = () => {
                 
                 return (
                   <tr key={part.id}>
-                    <td>{part.code}</td>
-                    <td>{part.name}</td>
-                    <td className="text-end">${part.purchasePrice.toFixed(2)}</td>
-                    <td className="text-end">${part.sellingPrice.toFixed(2)}</td>
+                    <td className="text-primary">{part.code}</td>
+                    <td className="text-primary">{part.name}</td>
+                    <td className="text-end text-primary">${part.purchasePrice.toFixed(2)}</td>
+                    <td className="text-end text-primary">${part.sellingPrice.toFixed(2)}</td>
                     <td className={`text-end ${profitClass}`}>
                       ${Math.abs(profit).toFixed(2)} {profit >= 0 ? '↑' : '↓'}
                     </td>
                     <td className="text-end">
                       <button 
-                        className="btn btn-outline-danger btn-sm"
+                        className="btn btn-outline-primary btn-sm"
                         onClick={() => handleDelete(part.id)}
                       >
                         <i className="bi bi-trash"></i>
