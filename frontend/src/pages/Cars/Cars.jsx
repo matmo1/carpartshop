@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import SearchBar from '../components/ui/SearchBar';
+import SearchBar from '../../components/ui/SearchBar';
+import AssociatePartModal from './AssociatePartModal';
 
 const Cars = () => {
   const [cars, setCars] = useState([]);
@@ -11,6 +12,8 @@ const Cars = () => {
     year: ''
   });
   const [searchTerm, setSearchTerm] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [selectedCar, setSelectedCar] = useState(null);
 
   useEffect(() => {
     fetchCars();
@@ -142,9 +145,18 @@ const Cars = () => {
                     <p className="mb-1"><strong className="text-primary">Year:</strong> {car.year}</p>
                   </div>
                 </div>
-                <div className="card-footer bg-transparent d-flex justify-content-end">
+                <div className="card-footer bg-transparent d-flex justify-content-between">
                   <button 
                     className="btn btn-outline-primary btn-sm"
+                    onClick={() => {
+                      setSelectedCar(car.id);
+                      setShowModal(true);
+                    }}
+                  >
+                    <i className="bi bi-plus"></i> Add Parts
+                  </button>
+                  <button 
+                    className="btn btn-outline-danger btn-sm"
                     onClick={() => handleDelete(car.id)}
                   >
                     <i className="bi bi-trash"></i> Delete
@@ -155,6 +167,16 @@ const Cars = () => {
           ))}
         </div>
       )}
+
+      <AssociatePartModal 
+        show={showModal}
+        carId={selectedCar}
+        onClose={() => setShowModal(false)}
+        onSuccess={() => {
+          setShowModal(false);
+          fetchCars();
+        }}
+      />
     </div>
   );
 };

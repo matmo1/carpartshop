@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import SearchBar from '../components/ui/SearchBar';
+import SearchBar from '../../components/ui/SearchBar';
+import AssociateCarModal from './AssociateCarModal';
 
 const Parts = () => {
   const [parts, setParts] = useState([]);
@@ -12,6 +13,8 @@ const Parts = () => {
     sellingPrice: ''
   });
   const [searchTerm, setSearchTerm] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [selectedPart, setSelectedPart] = useState(null);
 
   useEffect(() => {
     fetchParts();
@@ -183,7 +186,16 @@ const Parts = () => {
                     </td>
                     <td className="text-end">
                       <button 
-                        className="btn btn-outline-primary btn-sm"
+                        className="btn btn-outline-primary btn-sm me-2"
+                        onClick={() => {
+                          setSelectedPart(part.id);
+                          setShowModal(true);
+                        }}
+                      >
+                        <i className="bi bi-plus"></i> Add Cars
+                      </button>
+                      <button 
+                        className="btn btn-outline-danger btn-sm"
                         onClick={() => handleDelete(part.id)}
                       >
                         <i className="bi bi-trash"></i>
@@ -196,6 +208,16 @@ const Parts = () => {
           </table>
         </div>
       )}
+
+      <AssociateCarModal 
+        show={showModal}
+        partId={selectedPart}
+        onClose={() => setShowModal(false)}
+        onSuccess={() => {
+          setShowModal(false);
+          fetchParts();
+        }}
+      />
     </div>
   );
 };

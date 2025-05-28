@@ -1,8 +1,9 @@
 package com.mt.carpartshop.model;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,8 +11,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 
@@ -29,13 +28,9 @@ public class Part {
     private double purchasePrice;
     private double sellingPrice;
     
-    @ManyToMany
-    @JoinTable(
-        name = "part_compatible_cars",
-        joinColumns = @JoinColumn(name = "part_id"),
-        inverseJoinColumns = @JoinColumn(name = "car_id")
-    )
-    private List<Car> compatibleCars;
+    @ManyToMany(mappedBy = "parts")
+    @JsonIgnore
+    private Set<Car> cars = new HashSet<>();
     
     @ManyToOne
     private Manufacturer manufacturer;
@@ -53,8 +48,8 @@ public class Part {
     public void setPurchasePrice(double purchasePrice) { this.purchasePrice = purchasePrice; }
     public double getSellingPrice() { return sellingPrice; }
     public void setSellingPrice(double sellingPrice) { this.sellingPrice = sellingPrice; }
-    public List<Car> getCompatibleCars() { return compatibleCars; }
-    public void setCompatibleCars(List<Car> compatibleCars) { this.compatibleCars = compatibleCars; }
     public Manufacturer getManufacturer() { return manufacturer; }
     public void setManufacturer(Manufacturer manufacturer) { this.manufacturer = manufacturer; }
+    public Set<Car> getCars() {return cars;}
+    public void setCars(Set<Car> cars) {this.cars =cars;}
 }
