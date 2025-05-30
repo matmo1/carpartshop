@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import SearchBar from '../../components/ui/SearchBar';
 import AssociatePartModal from './AssociatePartModal';
+import CarPartsModal from './CarPartsModal';
 
 const Cars = () => {
   const [cars, setCars] = useState([]);
@@ -12,8 +13,10 @@ const Cars = () => {
     year: ''
   });
   const [searchTerm, setSearchTerm] = useState('');
-  const [showModal, setShowModal] = useState(false);
+  const [showAssociateModal, setShowAssociateModal] = useState(false);
+  const [showPartsModal, setShowPartsModal] = useState(false);
   const [selectedCar, setSelectedCar] = useState(null);
+  const [carParts, setCarParts] = useState([]);
 
   useEffect(() => {
     fetchCars();
@@ -28,6 +31,15 @@ const Cars = () => {
       console.error('Error fetching cars:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCarParts = async (carId) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/cars/${carId}/parts`);
+      setCarParts(response.data);
+    } catch (error) {
+      console.error('Error fetching car parts:', error);
     }
   };
 
@@ -50,6 +62,12 @@ const Cars = () => {
     } catch (error) {
       console.error('Error deleting car:', error);
     }
+  };
+
+  const handleShowParts = async (carId) => {
+    setSelectedCar(carId);
+    await fetchCarParts(carId);
+    setShowPartsModal(true);
   };
 
   const filteredCars = cars.filter(car => 
@@ -146,20 +164,28 @@ const Cars = () => {
                   </div>
                 </div>
                 <div className="card-footer bg-transparent d-flex justify-content-between">
-                  <button 
-                    className="btn btn-outline-primary btn-sm"
-                    onClick={() => {
-                      setSelectedCar(car.id);
-                      setShowModal(true);
-                    }}
-                  >
-                    <i className="bi bi-plus"></i> Add Parts
-                  </button>
+                  <div className="btn-group" role="group">
+                    <button 
+                      className="btn btn-outline-primary btn-sm"
+                      onClick={() => {
+                        setSelectedCar(car.id);
+                        setShowAssociateModal(true);
+                      }}
+                    >
+                      <i className="bi bi-plus"></i> Add Parts
+                    </button>
+                    <button 
+                      className="btn btn-outline-info btn-sm"
+                      onClick={() => handleShowParts(car.id)}
+                    >
+                      <i className="bi bi-list"></i> View Parts
+                    </button>
+                  </div>
                   <button 
                     className="btn btn-outline-danger btn-sm"
                     onClick={() => handleDelete(car.id)}
                   >
-                    <i className="bi bi-trash"></i> Delete
+                    <i className="bi bi-trash"></i> Delete Car
                   </button>
                 </div>
               </div>
@@ -169,13 +195,21 @@ const Cars = () => {
       )}
 
       <AssociatePartModal 
-        show={showModal}
+        show={showAssociateModal}
         carId={selectedCar}
-        onClose={() => setShowModal(false)}
+        onClose={() => setShowAssociateModal(false)}
         onSuccess={() => {
-          setShowModal(false);
+          setShowAssociateModal(false);
           fetchCars();
         }}
+      />
+
+      <CarPartsModal
+        show={showPartsModal}
+        onHide={() => setShowPartsModal(false)}
+        parts={carParts}
+        carId={selectedCar}
+        onPartsRemoved={() => fetchCarParts(selectedCar)}
       />
     </div>
   );

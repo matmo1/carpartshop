@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class CarService {
@@ -68,5 +69,23 @@ public class CarService {
         
         car.getParts().add(part);
         carRepository.save(car);
+    }
+
+    @Transactional
+    public void removePartsFromCar(Long carId, List<Long> partIds) {
+        Car car = carRepository.findById(carId)
+            .orElseThrow(() -> new EntityNotFoundException("Car not found with id: " + carId));
+        
+        Set<Part> partsToRemove = partRepository.findAllById(partIds).stream()
+            .collect(Collectors.toSet());
+        
+        // Remove each part from the car
+        for (Part part : partsToRemove) {
+            car.getParts().remove(part);
+            part.getCars().remove(car);
+            partRepository.save(part); // Update the part
+        }
+        
+        carRepository.save(car); // Update the car
     }
 }

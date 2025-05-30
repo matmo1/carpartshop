@@ -49,4 +49,12 @@ public class CarController {
         carService.addPartToCar(carId, partId);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{carId}/parts")
+    public ResponseEntity<Void> removePartsFromCar(
+            @PathVariable Long carId,
+            @RequestBody List<Long> partIds) {
+        carService.removePartsFromCar(carId, partIds);
+        return ResponseEntity.noContent().build();
+    }
 }

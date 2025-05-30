@@ -40,3 +40,17 @@
 .read-the-docs {
   color: #888;
 }
+
+/* In your App.css or a dedicated CSS file */
+.car-parts-modal .modal-content {
+  border-radius: 10px;
+}
+
+.car-parts-modal .modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.car-parts-modal .table {
+  margin-bottom: 0;
+}
