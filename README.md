@@ -8,8 +8,8 @@
 
 ### Инсталация
 ```bash
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
+git clone https://github.com/matmo1/carpartshop.git
+cd carpartshop
 docker-compose up --build
 ```
 ## 🏗️ Структура на проекта
@@ -60,6 +60,11 @@ Frontend услуга
 Управление на състоянието
 
 ## 🐳 Docker команди
+Линк към Dockerhub
+```bash
+https://hub.docker.com/repositories/matmo1
+```
+
 Команда	Описание
 docker-compose up	Стартира всички услуги
 docker-compose up -d	Стартира в detached режим
